@@ -1,0 +1,24 @@
+# Environment variables
+.env
+*.env
+
+# Python
+**/__pycache__/
+*.pyc
+venv/
+.venv/
+
+# Node
+node_modules/
+
+# Next.js
+.next/
+
+# Vercel
+.vercel/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
