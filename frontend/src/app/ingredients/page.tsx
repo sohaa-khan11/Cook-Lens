@@ -9,7 +9,7 @@ import { useProject } from "@/context/ProjectContext";
 import { getRecipes } from "@/lib/api";
 import { useRouter } from "next/navigation";
 
-const CINEMATIC_EASE = [0.16, 1, 0.3, 1] as [number, number, number, number];
+const CINEMATIC_EASE = [0.16, 1, 0.3, 1] as const;
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },

@@ -9,7 +9,7 @@ import { useState } from "react";
 import { useProject } from "@/context/ProjectContext";
 import Link from "next/link";
 
-const CINEMATIC_EASE = [0.16, 1, 0.3, 1] as [number, number, number, number];
+const CINEMATIC_EASE = [0.16, 1, 0.3, 1] as const;
 
 const CATEGORIES = ["All", "Main", "Salads", "Sides", "Desserts", "Rapid"];
 

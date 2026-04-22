@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 
-const CINEMATIC_EASE = [0.16, 1, 0.3, 1];
+const CINEMATIC_EASE = [0.16, 1, 0.3, 1] as const;
 
 export function TopBar({ title = "COOKLENS", showBack = false }: { title?: string, showBack?: boolean }) {
   return (

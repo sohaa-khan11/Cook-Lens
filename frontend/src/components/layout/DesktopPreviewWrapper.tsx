@@ -47,7 +47,7 @@ export function DesktopPreviewWrapper({ children, title, subtitle, bgImage }: { 
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] as const }}
           >
             <span className="text-[10px] uppercase tracking-[0.5em] font-black text-primary mb-8 block opacity-60">Mobile Exclusive Experience</span>
             <h2 className="text-6xl font-black tracking-tight text-on-surface mb-8 leading-[0.9]">
