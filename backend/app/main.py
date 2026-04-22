@@ -2,7 +2,6 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.routes import detection, recipes
 from dotenv import load_dotenv
-import os
 
 # Load environment variables from .env
 load_dotenv()

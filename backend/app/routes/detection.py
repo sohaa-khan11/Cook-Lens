@@ -1,3 +1,5 @@
+from fastapi import APIRouter, File, UploadFile
+from app.models.schemas import DetectionResponse
 from app.services.vision_service import detect_ingredients_from_image
 
 router = APIRouter()
