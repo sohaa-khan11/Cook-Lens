@@ -1,9 +1,16 @@
-/**
- * CookLens API utilities.
- * Handles communication between the Next.js frontend and the FastAPI backend.
- */
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
-const BASE_URL = "http://127.0.0.1:8000";
+/**
+ * Validates the base URL configuration.
+ */
+function getBaseUrl(): string {
+  if (!BASE_URL) {
+    const errorMsg = "CRITICAL: NEXT_PUBLIC_API_URL is not defined. Ensure it is set in Vercel environment variables.";
+    console.error(errorMsg);
+    return ""; // Fallback to empty string for local relative calls if applicable
+  }
+  return BASE_URL.endsWith("/") ? BASE_URL.slice(0, -1) : BASE_URL;
+}
 
 export interface DetectionResponse {
   ingredients: string[];
@@ -32,7 +39,8 @@ export async function detectIngredients(image?: File): Promise<string[]> {
       formData.append("image", image);
     }
 
-    const response = await fetch(`${BASE_URL}/detect`, {
+    const url = getBaseUrl();
+    const response = await fetch(`${url}/detect`, {
       method: "POST",
       body: formData,
     });
@@ -54,7 +62,8 @@ export async function detectIngredients(image?: File): Promise<string[]> {
  */
 export async function getRecipes(ingredients: string[]): Promise<Recipe[]> {
   try {
-    const response = await fetch(`${BASE_URL}/recipes`, {
+    const url = getBaseUrl();
+    const response = await fetch(`${url}/recipes`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
