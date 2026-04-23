@@ -63,43 +63,57 @@ def validate_recipe_structure(data: Dict) -> bool:
 
 async def generate_recipes(ingredients: List[str]) -> List[Dict]:
     """
-    Calls Gemini Flash with strict validation, normalization, and error handling.
+    Calls Gemini Flash with strict validation, normalization, and quality control filtering.
     """
-    # 1. Edge Case: Empty input
+    # 1. Input Normalization
     if not ingredients:
-        logger.info("Empty ingredients list provided. Returning empty recipes.")
+        logger.info("Empty ingredients list provided.")
+        return []
+    
+    # Task 2: Convert to lowercase, remove duplicates, and strip whitespace
+    ingredients = list(set([i.strip().lower() for i in ingredients if i.strip()]))
+    
+    if not ingredients:
         return []
 
     ingredients_str = ", ".join(ingredients)
     
-    # 2. Improved restrictive prompt
+    # Task 1: Improved Expert Indian Chef prompt
     prompt = f"""
-    You are a professional Indian Chef. 
-    Suggest 2–3 Indian recipes using these ingredients as the primary components: {ingredients_str}.
+    You are an expert Indian home chef.
 
-    FORMAT REQUIREMENTS:
-    - Return ONLY valid JSON.
-    - No conversational text, no markdown code blocks outside JSON, no explanation.
-    - JSON structure:
+    Given these ingredients:
+    {ingredients_str}
+
+    Your task is to suggest 2–3 realistic Indian recipes.
+
+    Rules:
+    - Use as many of the given ingredients as possible
+    - Recipes must be feasible using mostly these ingredients
+    - Missing ingredients should be minimal (maximum 1–3)
+    - Prefer recipes that can actually be cooked with what is available
+    - DO NOT suggest unrelated or completely different dishes
+
+    For each recipe include:
+    - recipe_name
+    - used_ingredients (only from provided list)
+    - missing_ingredients (keep minimal)
+    - substitutions (practical Indian kitchen alternatives)
+    - steps (4–6 simple steps)
+
+    STRICT:
+    Return ONLY valid JSON in this exact format:
     {{
       "recipes": [
         {{
-          "recipe_name": "String",
-          "used_ingredients": ["string"],
-          "missing_ingredients": ["string"],
-          "substitutions": ["string"],
-          "steps": ["string"]
+          "recipe_name": "...",
+          "used_ingredients": [],
+          "missing_ingredients": [],
+          "substitutions": [],
+          "steps": []
         }}
       ]
     }}
-
-    CONSTRAINTS:
-    - Recipes MUST be Indian-style.
-    - Limit output to 2–3 of the best matches.
-    - Limit instructions to 5–7 concise steps per recipe.
-    - Use provided ingredients primarily. Avoid recommending rare or exotic secondary ingredients.
-    - If no relevant Indian recipe can be made, return {{"recipes": []}}.
-    - If unsure, return {{"recipes": []}}.
     """
 
     try:
@@ -113,7 +127,7 @@ async def generate_recipes(ingredients: List[str]) -> List[Dict]:
             logger.warning("Gemini returned an empty response.")
             return []
 
-        # 4. Parsing and Validation
+        # 4. Parsing and Validation (Task 3)
         try:
             data = json.loads(response.text)
         except json.JSONDecodeError as je:
@@ -124,12 +138,22 @@ async def generate_recipes(ingredients: List[str]) -> List[Dict]:
             logger.warning("Gemini response failed schema validation.")
             return []
 
-        # 5. Normalization
+        # 5. Output Normalization
         cleaned_recipes = normalize_recipe_data(data["recipes"])
         
-        return cleaned_recipes
+        # 6. Quality Control (Task 4)
+        # Filter out recipes where:
+        # - too many missing ingredients (>3)
+        # - used_ingredients overlap is too low (must use at least one)
+        filtered_recipes = [
+            r for r in cleaned_recipes 
+            if len(r.get("missing_ingredients", [])) <= 3 
+            and len(r.get("used_ingredients", [])) > 0
+        ]
+        
+        logger.info(f"Generated {len(filtered_recipes)} qualified recipes.")
+        return filtered_recipes
         
     except Exception as e:
-        logger.error(f"Critical Sythensis Failure: {e}")
-        # Safeguard fallback
+        logger.error(f"Critical Synthesis Failure: {e}")
         return []
