@@ -115,7 +115,7 @@ const HeroSection = () => {
   return (
     <section ref={container} className="relative h-screen w-full overflow-hidden flex items-center justify-center">
       <motion.div style={{ translateY: yParallax, scale: scaleParallax, x: sx, y: sy, filter: blurParallax }} className="absolute inset-0 z-0">
-        <img src="/hero.png" alt="Hero" className="w-full h-full object-cover brightness-[0.35]" />
+        <img src="/hero.png" alt="Culinary Background" className="w-full h-full object-cover brightness-[0.35]" />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0a0a0a]/50 to-[#0a0a0a]" />
       </motion.div>
       
@@ -197,8 +197,8 @@ const VisionSection = () => {
   const opacity = useTransform(scrollSpring, [0, 0.3, 0.7, 1], [0, 1, 1, 0]);
 
   return (
-    <section ref={ref} className="py-24 md:py-32 bg-[#0a0a0a] overflow-hidden relative">
-      <div className="flex flex-col gap-4">
+    <section ref={ref} className="py-24 md:py-32 bg-[#0a0a0a] overflow-hidden relative w-full">
+      <div className="flex flex-col gap-4 w-full">
         <motion.h2 
           style={{ x: xLeft, skewX }}
           className="text-8xl md:text-[15rem] font-black tracking-tighter text-white/[0.02] whitespace-nowrap leading-none select-none italic"
@@ -207,16 +207,16 @@ const VisionSection = () => {
         </motion.h2>
         <motion.div 
           style={{ opacity }}
-          className="container mx-auto px-8 relative z-10 -mt-12 md:-mt-32"
+          className="w-full px-8 md:px-16 relative z-10 -mt-12 md:-mt-32"
         >
-          <div className="max-w-4xl">
+          <div className="w-full">
             <Magnetic strength={0.1}>
               <h3 className="text-4xl md:text-6xl font-extrabold tracking-tight text-on-surface mb-8 leading-tight">
                 A private archive for your <br />
                 <span className="text-primary italic">culinary legacy.</span>
               </h3>
             </Magnetic>
-            <p className="text-xl md:text-2xl text-on-surface-variant leading-relaxed max-w-2xl font-medium">
+            <p className="text-xl md:text-2xl text-on-surface-variant leading-relaxed w-full md:max-w-4xl font-medium">
               CookLens understands the soul of your ingredients, 
               curating a journey from raw counter-top basics to five-star outcomes.
             </p>
@@ -298,7 +298,7 @@ const ExperienceSection = () => {
         className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-primary/5 blur-[180px] pointer-events-none -z-10 group-hover/section:bg-primary/10 transition-colors duration-1000"
       />
 
-      <div className="container mx-auto px-8">
+      <div className="w-full px-8 md:px-16">
         <div className="text-center mb-16">
           <motion.h2 
             initial={{ opacity: 0, scale: 0.98, letterSpacing: "-0.05em" }}
@@ -314,7 +314,7 @@ const ExperienceSection = () => {
             whileInView={{ opacity: 0.6 }}
             viewport={{ once: true }}
             transition={{ duration: 1, delay: 0.4 }}
-            className="text-xl text-on-surface-variant max-w-2xl mx-auto font-medium"
+            className="text-xl text-on-surface-variant w-full md:max-w-4xl mx-auto font-medium"
           >
             A three-act journey into culinary liberation.
           </motion.p>
@@ -332,7 +332,7 @@ const ExperienceSection = () => {
                whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                viewport={{ once: true }}
                transition={{ duration: 1.2, ease: CINEMATIC_EASE, delay: i * 0.25 }}
-               className="p-12 glass-premium rounded-[3.5rem] flex flex-col gap-6 relative overflow-hidden group/card"
+               className="p-12 glass-premium rounded-[3.5rem] flex flex-col gap-6 relative overflow-hidden group/card w-full"
             >
               <motion.div 
                  style={{ 
@@ -395,55 +395,63 @@ const ClosingSection = () => {
 // --- Mobile App Dashboard ---
 
 const MobileLanding = () => {
-  const [greeting, setGreeting] = useState(() => {
-    const hour = typeof window !== 'undefined' ? new Date().getHours() : 0;
-    if (hour < 12) return "Good Morning";
-    if (hour < 18) return "Good Afternoon";
-    return "Good Evening";
-  });
-  
-  useEffect(() => {
-    // Clock/greeting logic handled by lazy initializer
-  }, []);
+  // Calculate greeting during render to avoid useEffect overhead
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? "Good Morning" : hour < 18 ? "Good Afternoon" : "Good Evening";
 
   return (
     <div className="min-h-screen bg-[#060606] text-on-surface pb-32">
       {/* Background Cinematic Noise & Glows */}
       <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-0 right-0 w-80 h-80 bg-primary/10 blur-[120px]" />
+        <div className="absolute top-0 right-0 w-80 h-80 bg-primary/5 blur-[120px]" />
         <div className="absolute bottom-0 left-0 w-80 h-80 bg-primary/5 blur-[120px]" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.15] mix-blend-overlay" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full opacity-[0.03] pointer-events-none mix-blend-overlay z-0" 
+             style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} 
+        />
       </div>
 
-      <main className="relative z-10 px-6 pt-24 space-y-10">
-        {/* Header Greeting */}
-        <motion.div
-           initial={{ opacity: 0, y: 20 }}
-           animate={{ opacity: 1, y: 0 }}
-           transition={{ duration: 1.2, ease: CINEMATIC_EASE }}
-           className="space-y-1"
-        >
-          <span className="text-primary font-black text-xs uppercase tracking-[0.4em] block">{greeting}</span>
-          <h2 className="text-5xl font-black tracking-tighter italic">Mastery Awaits<span className="text-primary">.</span></h2>
-        </motion.div>
+      <header className="relative z-20 px-6 pt-12 pb-4 flex justify-between items-center">
+        <div>
+          <h1 className="text-xl font-black tracking-tighter italic">COOKLENS<span className="text-primary">.</span></h1>
+          <span className="text-[9px] font-black uppercase tracking-[0.4em] text-primary/60">{greeting}</span>
+        </div>
+        <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
+          <span className="material-symbols-outlined text-white/40 text-lg">account_circle</span>
+        </div>
+      </header>
 
-        {/* Primary Action Hexer */}
-        <div className="grid grid-cols-1 gap-6">
-          <Link href="/scan">
+      <main className="relative z-10 px-4 space-y-8">
+        
+        {/* Quick Actions Grid */}
+        <div className="grid grid-cols-2 gap-4">
+          <Link href="/scan" className="col-span-2">
             <motion.div 
               whileTap={{ scale: 0.98 }}
-              className="relative aspect-[2/1.2] rounded-[2.5rem] overflow-hidden group border border-white/5 shadow-2xl"
+              className="relative h-48 rounded-3xl overflow-hidden group border border-white/5 shadow-2xl"
             >
-              <img src="/hero.png" alt="Scan ingredients with perspective" className="w-full h-full object-cover brightness-[0.5] group-hover:scale-105 transition-transform duration-[2s]" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60" />
-              <div className="absolute inset-0 flex flex-col justify-end p-8">
-                <div className="flex items-center gap-3 mb-2">
-                   <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
-                     <span className="material-symbols-outlined text-[18px] text-on-primary">center_focus_strong</span>
-                   </div>
-                   <span className="text-sm font-black uppercase tracking-[0.2em] text-primary">Live Optic</span>
+              <img src="https://images.unsplash.com/photo-1556910103-1c02745aae4d?q=80&w=1000&auto=format&fit=crop" alt="Scan" className="w-full h-full object-cover brightness-[0.4]" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80" />
+              <div className="absolute inset-0 flex flex-col justify-end p-6">
+                <div className="flex items-center gap-2 mb-1">
+                   <span className="material-symbols-outlined text-primary text-sm">center_focus_strong</span>
+                   <span className="text-[10px] font-black uppercase tracking-widest text-primary">Neural Lens</span>
                 </div>
-                <h3 className="text-3xl font-black tracking-tight text-white">Scan Ingredients</h3>
+                <h3 className="text-2xl font-black tracking-tight text-white uppercase italic">Initiate Scan</h3>
+              </div>
+            </motion.div>
+          </Link>
+
+          <Link href="/ingredients">
+            <motion.div 
+              whileTap={{ scale: 0.98 }}
+              className="relative h-40 rounded-3xl overflow-hidden group border border-white/5 bg-neutral-900/40 backdrop-blur-xl"
+            >
+              <div className="absolute inset-0 flex flex-col justify-center items-center p-6 text-center">
+                 <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-3">
+                   <span className="material-symbols-outlined text-primary">inventory_2</span>
+                 </div>
+                 <h3 className="text-xs font-black tracking-widest text-white uppercase">Vault</h3>
+                 <span className="text-[9px] font-bold text-white/30 uppercase mt-1">Archive</span>
               </div>
             </motion.div>
           </Link>
@@ -451,45 +459,41 @@ const MobileLanding = () => {
           <Link href="/recipes">
             <motion.div 
               whileTap={{ scale: 0.98 }}
-              className="relative aspect-[2/1] rounded-[2.5rem] overflow-hidden group border border-white/5 shadow-2xl"
+              className="relative h-40 rounded-3xl overflow-hidden group border border-white/5 bg-neutral-900/40 backdrop-blur-xl"
             >
-              <img src="/vision.png" alt="Digital vault archive view" className="w-full h-full object-cover brightness-[0.5] group-hover:scale-105 transition-transform duration-[2s]" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60" />
-              <div className="absolute inset-0 flex flex-col justify-end p-8">
-                <div className="flex items-center gap-3 mb-2">
-                   <div className="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center border border-white/10">
-                     <span className="material-symbols-outlined text-[18px] text-on-surface">local_library</span>
-                   </div>
-                   <span className="text-sm font-black uppercase tracking-[0.2em] text-white/40">The Archive</span>
-                </div>
-                <h3 className="text-3xl font-black tracking-tight text-white text-balance leading-none mt-2">Explore the Digital Vault</h3>
+              <div className="absolute inset-0 flex flex-col justify-center items-center p-6 text-center">
+                 <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-3">
+                   <span className="material-symbols-outlined text-primary">restaurant_menu</span>
+                 </div>
+                 <h3 className="text-xs font-black tracking-widest text-white uppercase">Recipes</h3>
+                 <span className="text-[9px] font-bold text-white/30 uppercase mt-1">Explore</span>
               </div>
             </motion.div>
           </Link>
         </div>
 
-        {/* Horizontal Mini-Scroller */}
-        <section className="space-y-6">
-          <div className="flex justify-between items-end">
-             <h4 className="text-xs font-black uppercase tracking-[0.4em] text-white/30">Daily Inspiration</h4>
-             <span className="text-[10px] font-bold text-primary uppercase tracking-widest italic">View all</span>
+        {/* Minimal Inspiration Scroller */}
+        <section className="space-y-4">
+          <div className="flex justify-between items-center px-1">
+             <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40 italic">Trending Now</h4>
+             <span className="text-[9px] font-bold text-primary uppercase tracking-widest">More</span>
           </div>
-          <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide -mx-6 px-6">
+          <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide -mx-4 px-4">
              {[
-               { title: "Miso Salmon", time: "25M", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuCH5c_da_8d1UEWlponTPAa5Ts3LRrcG71nl2XOLT_3Zv51nVc8FeRlb88mvaUlWXOkphCrHLrlU9OM43-Xau1MHCGrv8NzC3oHZ_hrMnT93dI4Jj_eHMJpbzeDi4As2TPum50IM59uvWEC_nEfWTH2Ib3HmptONs-ymnQnGsPWQbAlEc1gu9622O6Q6rv4oUo1xQF0KWM2dn2tjz0HS8dEhL9Nq9XtUfRnxwjHL7maowcgB97yERLmrEIpRaTKrVTLbxuzPJR8bP4" },
-               { title: "Truffle Pasta", time: "45M", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuDBpVY2SFfLtOTQv-6_4bvHwh3cHIk_seY-xiCDv6tTBkNIbp1KtvP7hxF7YKrD0hiCY4yPlT_9COWLMwiNLURdJ8RUX49_fHlfDe-vYShvtogO-Iqz1b0Rszg3JCwMASOFOKex5d7MkZwQIV6C3ToqNUGES2l71FkCEeUIYWCohfYicAnp9PijL1Og5-b2cQkgVRXTp1lFLZBawCp74ahFmE06WUywgB3z-Pwx_T8CLk_l0Ynd6A1rOU4fTieWTlKOJX9akek5mIU" },
-               { title: "Garden Salad", time: "15M", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuDBqyLxcf1Y7pb67kIM_PuxESuiI9lhSaG4TjDA1WEouZxk7cddPCxz8l-_rwXlVDs2J-j1AwYIAjZ9MQC_78PeQHRuqXbbfzmXGBh4IAf1rUWou5KOb8sdZ5Gc21qW5Grez4ZnOW2sRtURDFZSko9sXhY251rHw3MkR_GP8rg27QpytT0Xv83ezNKapcPMRlovkgxN9W3uczwjlzvBUw4mJu-FdV4y45pDbwYCMCjYSfYqx-ARFkDZ0e2NWflqXgW58ySLjPgeODM" }
+               { title: "Miso Salmon", time: "25M", img: "https://images.unsplash.com/photo-1467003909585-2f8a72700288?q=80&w=1000&auto=format&fit=crop" },
+               { title: "Truffle Pasta", time: "45M", img: "https://images.unsplash.com/photo-1473093226795-af9932fe5856?q=80&w=1000&auto=format&fit=crop" },
+               { title: "Garden Salad", time: "15M", img: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=1000&auto=format&fit=crop" }
              ].map((item, i) => (
                <motion.div 
                  key={i} 
                  whileTap={{ scale: 0.95 }}
-                 className="flex-shrink-0 w-44 aspect-[1/1.4] rounded-[2rem] overflow-hidden relative border border-white/5 shadow-xl"
+                 className="flex-shrink-0 w-40 h-56 rounded-3xl overflow-hidden relative border border-white/5 shadow-xl"
                >
-                 <img src={item.img} alt={item.title} className="w-full h-full object-cover brightness-[0.6]" />
-                 <div className="absolute inset-0 flex flex-col justify-end p-5">
-                    <h5 className="text-lg font-bold text-white leading-tight mb-1">{item.title}</h5>
-                    <div className="flex items-center gap-2 text-white/50 text-[10px] font-bold uppercase tracking-widest">
-                       <span className="material-symbols-outlined text-[14px]">schedule</span>
+                 <img src={item.img} alt={item.title} className="w-full h-full object-cover brightness-[0.5]" />
+                 <div className="absolute inset-0 flex flex-col justify-end p-4">
+                    <h5 className="text-sm font-black text-white uppercase italic leading-tight mb-1">{item.title}</h5>
+                    <div className="flex items-center gap-1.5 text-white/40 text-[9px] font-bold uppercase tracking-widest">
+                       <span className="material-symbols-outlined text-[12px]">schedule</span>
                        <span>{item.time}</span>
                     </div>
                  </div>
@@ -498,15 +502,15 @@ const MobileLanding = () => {
           </div>
         </section>
 
-        {/* Vault Status Ring */}
-        <div className="p-8 glass-premium rounded-[3rem] border border-white/5 flex items-center gap-6">
-           <div className="w-16 h-16 rounded-full border-4 border-primary/20 flex items-center justify-center relative">
-              <div className="absolute inset-0 rounded-full border-4 border-primary border-t-transparent animate-spin duration-[3s]" />
-              <span className="text-xl font-black text-on-surface">12</span>
+        {/* Compact Status Card */}
+        <div className="p-6 bg-neutral-900/60 backdrop-blur-2xl rounded-[2.5rem] border border-white/5 flex items-center gap-5">
+           <div className="w-12 h-12 rounded-full border-2 border-primary/20 flex items-center justify-center relative flex-shrink-0">
+              <div className="absolute inset-0 rounded-full border-2 border-primary border-t-transparent animate-spin duration-[4s]" />
+              <span className="text-sm font-black text-primary">12</span>
            </div>
            <div>
-              <h4 className="text-lg font-bold text-on-surface">Digital Cellar Active</h4>
-              <p className="text-xs text-on-surface-variant font-medium opacity-60">12 ingredients identified and archived.</p>
+              <h4 className="text-xs font-black text-white uppercase tracking-widest italic">System Active</h4>
+              <p className="text-[10px] text-white/40 font-medium tracking-tight">AI Archive synced with cloud vault.</p>
            </div>
         </div>
       </main>
@@ -537,7 +541,7 @@ export default function Home() {
         <HeroSection />
         <VisionSection />
         
-        <section className="container mx-auto px-8 relative z-10">
+        <section className="w-full px-8 md:px-16 relative z-10">
           <FeatureItem 
             index={0}
             title="AI-Driven Sommelier Pairing"
@@ -554,20 +558,20 @@ export default function Home() {
             index={2}
             title="Zero Waste Logic"
             description="Intelligence that prioritizes expiring items, keeping your kitchen efficient and your palate excited."
-            image="https://lh3.googleusercontent.com/aida-public/AB6AXuADBpPQSyeW2GSuIXsIfAiOs3fsbhzj8uor47xinqGIdUx2qi98Jzjm4hXlwWG2oD-8cj2JNo1dS6bTxm9CNFUk7gPByiKVWUaaqE2MqT5RiSAOMaJZq0cWhubCUc_j-Z_NVqsp-b-7vurtj62cC3YLZAYffOwBVnTTPK0x5LFH4kZbvw-BbJaQVSK2-BRMKD7Yifi8G8bAtUeDE28XaZbBA0JB85Yyf7DYKWsfVwxGqL9cNLxezO0zzyGYZggx6l1CN3zMOTwGcfQ"
+            image="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=1000&auto=format&fit=crop"
           />
         </section>
 
         <ExperienceSection />
         <ClosingSection />
 
-        <footer className="py-12 border-t border-white/5 bg-[#080808]">
+        <footer className="py-12 border-t border-white/5 bg-[#080808] w-full">
           <motion.div 
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 2 }}
-            className="container mx-auto px-8 flex justify-between items-center text-[10px] uppercase font-black tracking-widest text-on-surface-variant/20 text-center md:text-left"
+            className="w-full px-8 md:px-16 flex justify-between items-center text-[10px] uppercase font-black tracking-widest text-on-surface-variant/20 text-center md:text-left"
           >
             <span>© 2024 CookLens</span>
             <div className="hidden md:flex gap-8">

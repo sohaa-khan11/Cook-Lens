@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+
+# Data
+app/data/raw/
+# app/data/processed/  # Keeping recipes_clean.json as it is < 10MB
+
+# ML Models
+yolov8n.pt
+
+# VS Code
+.vscode/

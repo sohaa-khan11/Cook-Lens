@@ -1,86 +1,119 @@
-import json
-import google.generativeai as genai
-from typing import List, Dict
-import os
+from ultralytics import YOLO
 import logging
+from typing import List, Dict
+import io
+from PIL import Image
 
 # Configure minimal, safe logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Configure Gemini with API Key from environment
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+# --- PHASE 3: NORMALIZATION CONFIGURATION ---
+# White-list of valid culinary ingredients from the COCO dataset
+ALLOWED_INGREDIENTS = {
+    "apple", "banana", "orange", "broccoli", "carrot", "hot dog", 
+    "sandwich", "pizza", "donut", "cake", "tomato", "onion", "potato", "egg"
+}
 
-if not GEMINI_API_KEY:
-    logger.error("GEMINI_API_KEY not set in environment.")
-    raise ValueError("GEMINI_API_KEY is not set in the environment variables.")
+# Mapping common YOLO misidentifications to culinary equivalents
+LABEL_MAP = {
+    "sports ball": "orange",
+    "hot dog": "sausage",
+    "sandwich": "bread",
+    "pizza": "pizza",
+    "donut": "donut",
+    "cake": "cake"
+}
 
-genai.configure(api_key=GEMINI_API_KEY)
-
-# Use Gemini 1.5 Flash for vision (multimodal)
-model = genai.GenerativeModel('gemini-1.5-flash')
-
-async def detect_ingredients_from_image(image_bytes: bytes) -> List[str]:
+def normalize_ingredients(raw_labels: List[str]) -> List[str]:
     """
-    Submits image bytes to Gemini Vision to identify food ingredients.
-    Returns a clean, normalized list of ingredient names.
+    Refines raw YOLO labels into a clean, culinary-friendly ingredient list.
     """
-    if not image_bytes:
-        return []
+    cleaned_list = []
+    seen = set()
 
-    # Prompt optimized for structured extraction
-    prompt = """
-    Identify edible food ingredients in this image.
+    for label in raw_labels:
+        label = label.lower().strip()
+        mapped_label = LABEL_MAP.get(label, label)
+        
+        if mapped_label in ALLOWED_INGREDIENTS or mapped_label in LABEL_MAP.values():
+            if mapped_label not in seen:
+                cleaned_list.append(mapped_label)
+                seen.add(mapped_label)
 
-    Return ONLY a JSON array of ingredient names like:
-    ["tomato", "onion", "potato"]
+    return cleaned_list
 
-    Rules:
-    - Only include edible food ingredients.
-    - Use simple, singular names (e.g., 'onion', not 'red onion slices').
-    - No explanation text, no markdown outside the JSON.
-    - If no ingredients are identified or if the image is not food, return [].
+# --- CORE SERVICE ---
+try:
+    # Initialize YOLO model globally
+    model = YOLO("yolov8n.pt")
+except Exception as e:
+    logger.error(f"Failed to load YOLO model: {e}")
+    model = None
+
+async def detect_ingredients_from_image(image_bytes: bytes, content_type: str = "image/jpeg") -> Dict:
     """
-
-    try:
-        # Prepare the multimodal part
-        image_part = {
-            "mime_type": "image/jpeg", # Common default, Gemini handles others gracefully
-            "data": image_bytes
+    Identifies food ingredients using local YOLOv8 detection with confidence awareness.
+    Returns: {
+        "ingredients": List[str],      # High confidence (>= 0.5)
+        "low_confidence": List[str],   # Low confidence (0.2 - 0.5)
+        "raw_detections": List[str],   # Everything detected before filtering
+        "needs_confirmation": bool     # Flag if results are uncertain
+    }
+    """
+    if not image_bytes or model is None:
+        return {
+            "ingredients": [],
+            "low_confidence": [],
+            "raw_detections": [],
+            "needs_confirmation": False
         }
 
-        # Generate content
-        response = await model.generate_content_async(
-            [prompt, image_part],
-            generation_config={"response_mime_type": "application/json"}
-        )
-
-        if not response or not response.text:
-            logger.warning("Gemini Vision returned an empty response.")
-            return []
-
-        # Parse JSON
-        try:
-            detected_list = json.loads(response.text)
-        except json.JSONDecodeError as je:
-            logger.error(f"Malformed JSON from Gemini Vision: {je}")
-            return []
-
-        # Normalize and Limit
-        if isinstance(detected_list, list):
-            # Lowercase, strip, deduplicate, and limit to top 10
-            cleaned = []
-            seen = set()
-            for item in detected_list:
-                val = str(item).strip().lower()
-                if val and val not in seen:
-                    cleaned.append(val)
-                    seen.add(val)
-            
-            return cleaned[:10]
+    try:
+        # Convert bytes to PIL Image
+        image = Image.open(io.BytesIO(image_bytes))
         
-        return []
+        # Run inference (Using 0.20 confidence to capture low-conf items)
+        results = model.predict(source=image, conf=0.20, save=False)
+        
+        raw_labels = []
+        high_conf_raw = []
+        low_conf_raw = []
+
+        for r in results:
+            for box in r.boxes:
+                class_id = int(box.cls[0])
+                label = model.names[class_id]
+                conf = float(box.conf[0])
+                
+                raw_labels.append(label)
+                
+                if conf >= 0.5:
+                    high_conf_raw.append(label)
+                elif conf >= 0.2:
+                    low_conf_raw.append(label)
+
+        # Apply Normalization to separate lists
+        ingredients = normalize_ingredients(high_conf_raw)
+        low_confidence = normalize_ingredients(low_conf_raw)
+        
+        # Determine if confirmation is needed
+        needs_confirmation = len(ingredients) == 0 or len(low_confidence) > 0
+        
+        logger.info(f"Detection Complete: {len(ingredients)} high-conf, {len(low_confidence)} low-conf identified.")
+
+        return {
+            "ingredients": ingredients,
+            "low_confidence": low_confidence,
+            "raw_detections": raw_labels,
+            "needs_confirmation": needs_confirmation
+        }
 
     except Exception as e:
-        logger.error(f"Critical Vision Failure: {e}")
-        return []
+        logger.error(f"Local YOLO Detection Failure: {e}")
+        return {
+            "ingredients": [],
+            "low_confidence": [],
+            "raw_detections": [],
+            "needs_confirmation": False
+        }

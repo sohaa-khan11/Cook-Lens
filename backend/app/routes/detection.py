@@ -4,24 +4,33 @@ from app.services.vision_service import detect_ingredients_from_image
 
 router = APIRouter()
 
-@router.post("/detect", response_model=DetectionResponse)
-async def detect_ingredients(image: UploadFile = File(None)):
+@router.post("/detect")
+async def detect_ingredients(image: UploadFile = File(...)):
     """
     POST /detect
     Input: image (multipart/form-data)
-    Output: List of string ingredients (AI-detected via Gemini Vision)
     """
     if not image:
         return {"ingredients": []}
 
     try:
         # Read image bytes
+        filename = image.filename
+        content_type = image.content_type
         image_bytes = await image.read()
         
-        # Call vision intelligence service
-        detected = await detect_ingredients_from_image(image_bytes)
+        if len(image_bytes) == 0:
+            return {"ingredients": []}
+            
+        # Call local vision intelligence service
+        detection_result = await detect_ingredients_from_image(image_bytes, content_type)
         
-        return {"ingredients": detected}
-    except Exception:
-        # Internal guard to ensure API consistency
-        return {"ingredients": []}
+        return detection_result
+    except Exception as e:
+        # Silent failure for UX, but log could be added here
+        return {
+            "ingredients": [],
+            "low_confidence": [],
+            "raw_detections": [],
+            "needs_confirmation": False
+        }

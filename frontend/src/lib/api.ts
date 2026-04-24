@@ -4,12 +4,14 @@ const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
  * Validates the base URL configuration.
  */
 function getBaseUrl(): string {
-  if (!BASE_URL) {
-    const errorMsg = "CRITICAL: NEXT_PUBLIC_API_URL is not defined. Ensure it is set in Vercel environment variables.";
-    console.error(errorMsg);
-    return ""; // Fallback to empty string for local relative calls if applicable
+  // FORCE FIX: Hardcoded to localhost:8000 to resolve environment variable loading issues
+  const baseUrl = "http://localhost:8000";
+  
+  if (typeof window !== "undefined") {
+    console.log(`[API] FORCE CONNECT: ${baseUrl}`);
   }
-  return BASE_URL.endsWith("/") ? BASE_URL.slice(0, -1) : BASE_URL;
+  
+  return baseUrl;
 }
 
 export interface DetectionResponse {
@@ -63,7 +65,7 @@ export async function detectIngredients(image?: File): Promise<string[]> {
 export async function getRecipes(ingredients: string[]): Promise<Recipe[]> {
   try {
     const url = getBaseUrl();
-    const response = await fetch(`${url}/recipes`, {
+    const response = await fetch(`${url}/recipes/search`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
