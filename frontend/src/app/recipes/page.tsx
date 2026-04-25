@@ -67,7 +67,7 @@ export default function RecipesPage() {
 
                 return (
                   <motion.div 
-                    key={recipe.recipe_name}
+                    key={`${recipe.recipe_name}-${index}`}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95 }}
@@ -77,12 +77,8 @@ export default function RecipesPage() {
                     <RecipeCard 
                       id={recipe.recipe_name}
                       title={recipe.recipe_name}
-                      image={index % 2 === 0 
-                        ? "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=1000&auto=format&fit=crop"
-                        : "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=1000&auto=format&fit=crop"
-                      }
                       match={matchPercent}
-                      time="25 MINS"
+                      time={`${recipe.time_minutes || 20} MINS`}
                       difficulty={recipe.steps.length > 5 ? "INTERMEDIATE" : "EASY"}
                       recipeData={recipe}
                     />

@@ -31,11 +31,12 @@ export default function RecipeDetailPage() {
     <DesktopPreviewWrapper
       title="Editorial Recipe Flow"
       subtitle="A gorgeous, step-by-step reading flow constructed to keep your hands free and your mind entirely on the fire."
-      bgImage="https://lh3.googleusercontent.com/aida-public/AB6AXuADBpPQSyeW2GSuIXsIfAiOs3fsbhzj8uor47xinqGIdUx2qi98Jzjm4hXlwWG2oD-8cj2JNo1dS6bTxm9CNFUk7gPByiKVWUaaqE2MqT5RiSAOMaJZq0cWhubCUc_j-Z_NVqsp-b-7vurtj62cC3YLZAYffOwBVnTTPK0x5LFH4kZbvw-BbJaQVSK2-BRMKD7Yifi8G8bAtUeDE28XaZbBA0JB85Yyf7DYKWsfVwxGqL9cNLxezO0zzyGYZggx6l1CN3zMOTwGcfQ"
     >
       <div className="bg-[#060606] relative overflow-x-hidden min-h-screen">
         {/* Background Cinematic Noise */}
-        <div className="fixed inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.05] mix-blend-overlay pointer-events-none z-[1]" />
+        <div className="fixed inset-0 opacity-[0.05] mix-blend-overlay pointer-events-none z-[1]" 
+             style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} 
+        />
         
         {/* Mobile Header Overlays */}
         <div className="fixed top-0 left-0 w-full z-[100] px-6 h-28 flex justify-between items-center pointer-events-none">
@@ -57,15 +58,15 @@ export default function RecipeDetailPage() {
         
         <main className="relative flex flex-col lg:flex-row w-full min-h-screen">
           
-          {/* Editorial Hero Column */}
-          <div className="lg:fixed lg:top-0 lg:left-0 lg:w-[45vw] lg:h-screen lg:z-0 w-full h-[65vh] relative overflow-hidden">
-            <motion.div style={{ scale: heroScale, opacity: heroOpacity }} className="w-full h-full origin-center">
-              <img 
-                className="w-full h-full object-cover brightness-[0.6] grayscale-[0.2]" 
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuADBpPQSyeW2GSuIXsIfAiOs3fsbhzj8uor47xinqGIdUx2qi98Jzjm4hXlwWG2oD-8cj2JNo1dS6bTxm9CNFUk7gPByiKVWUaaqE2MqT5RiSAOMaJZq0cWhubCUc_j-Z_NVqsp-b-7vurtj62cC3YLZAYffOwBVnTTPK0x5LFH4kZbvw-BbJaQVSK2-BRMKD7Yifi8G8bAtUeDE28XaZbBA0JB85Yyf7DYKWsfVwxGqL9cNLxezO0zzyGYZggx6l1CN3zMOTwGcfQ" 
-                alt={selectedRecipe.recipe_name}
-              />
+          {/* Editorial Hero Column - Clean Gradient Visual */}
+          <div className="lg:fixed lg:top-0 lg:left-0 lg:w-[45vw] lg:h-screen lg:z-0 w-full h-[65vh] relative overflow-hidden bg-gradient-to-br from-neutral-900 via-black to-neutral-900">
+            <motion.div style={{ scale: heroScale, opacity: heroOpacity }} className="w-full h-full origin-center flex items-center justify-center">
+              <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,var(--primary)_0%,transparent_80%)]" />
+              <span className="material-symbols-outlined text-primary/10 text-[180px] lg:text-[240px] italic select-none">
+                local_fire_department
+              </span>
             </motion.div>
+            
             {/* Desktop Gradient Blocker */}
             <div className="absolute inset-y-0 right-0 w-1/3 bg-gradient-to-l from-[#060606] to-transparent hidden lg:block opacity-100 z-10"></div>
             {/* Mobile Gradient Fade */}

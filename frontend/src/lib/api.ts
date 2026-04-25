@@ -4,8 +4,8 @@ const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
  * Validates the base URL configuration.
  */
 function getBaseUrl(): string {
-  // FORCE FIX: Hardcoded to localhost:8000 to resolve environment variable loading issues
-  const baseUrl = "http://localhost:8000";
+  // FORCE FIX: Hardcoded to 127.0.0.1:8000 to resolve environment variable loading issues
+  const baseUrl = "http://127.0.0.1:8000";
   
   if (typeof window !== "undefined") {
     console.log(`[API] FORCE CONNECT: ${baseUrl}`);
@@ -28,6 +28,7 @@ export interface Recipe {
 
 export interface RecipeResponse {
   recipes: Recipe[];
+  mode: string;
 }
 
 /**
@@ -62,7 +63,7 @@ export async function detectIngredients(image?: File): Promise<string[]> {
 /**
  * Fetches matching recipes from the backend based on provided ingredients.
  */
-export async function getRecipes(ingredients: string[]): Promise<Recipe[]> {
+export async function getRecipes(ingredients: string[]): Promise<RecipeResponse> {
   try {
     const url = getBaseUrl();
     const response = await fetch(`${url}/recipes/search`, {
@@ -78,7 +79,7 @@ export async function getRecipes(ingredients: string[]): Promise<Recipe[]> {
     }
 
     const data: RecipeResponse = await response.json();
-    return data.recipes;
+    return data;
   } catch (error) {
     console.error("Error fetching recipes:", error);
     throw error;

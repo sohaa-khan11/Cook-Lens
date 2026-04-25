@@ -30,8 +30,12 @@ export default function IngredientsPage() {
     try {
       setLoading(true);
       setError(null);
-      const recipes = await getRecipes(ingredients);
-      setRecipes(recipes);
+      setRecipes([]); // Clear previous results immediately
+      
+      const response = await getRecipes(ingredients);
+      console.log(`[PIPELINE] Match Mode: ${response.mode}`);
+      
+      setRecipes(response.recipes);
       router.push("/recipes");
     } catch (err) {
       console.error(err);

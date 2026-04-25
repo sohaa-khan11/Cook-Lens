@@ -34,7 +34,7 @@ export function BottomNav({ activeId }: { activeId?: string }) {
                   )}
                   
                   <motion.span 
-                    animate={isActive ? { scale: 1.1, color: "var(--primary)" } : { scale: 1, color: "rgba(255,255,255,0.4)" }}
+                    animate={isActive ? { scale: 1.1, color: "var(--color-primary)" } : { scale: 1, color: "rgba(255,255,255,0.4)" }}
                     className="material-symbols-outlined text-[24px]"
                     style={isActive ? { fontVariationSettings: "'FILL' 1" } : {}}
                   >

@@ -8,7 +8,7 @@ import Link from "next/link";
  * On desktop: Renders children inside a gorgeous mock device/preview layout
  * On mobile: Renders children normally without bounds
  */
-export function DesktopPreviewWrapper({ children, title, subtitle, bgImage }: { children: React.ReactNode, title: string, subtitle: string, bgImage: string }) {
+export function DesktopPreviewWrapper({ children, title, subtitle, bgImage }: { children: React.ReactNode, title: string, subtitle: string, bgImage?: string }) {
   const [isClient, setIsClient] = useState(false);
   
   useEffect(() => {

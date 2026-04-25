@@ -6,18 +6,18 @@ import { useRouter } from "next/navigation";
 import { Recipe } from "@/lib/api";
 
 interface RecipeCardProps {
-  id: string; // Used for identifying in context if needed
+  id: string; 
   title: string;
-  image: string;
+  image?: string; // Kept for compatibility but ignored for now
   match: number;
   time: string;
   difficulty: "EASY" | "INTERMEDIATE" | "ADVANCED";
-  recipeData?: Recipe; // The full backend object
+  recipeData?: Recipe; 
 }
 
 const CINEMATIC_EASE = [0.16, 1, 0.3, 1] as const;
 
-export function RecipeCard({ title, image, match, time, difficulty, recipeData }: RecipeCardProps) {
+export function RecipeCard({ title, match, time, difficulty, recipeData }: RecipeCardProps) {
   const { setSelectedRecipe } = useProject();
   const router = useRouter();
 
@@ -28,6 +28,10 @@ export function RecipeCard({ title, image, match, time, difficulty, recipeData }
     }
   };
 
+  const usedCount = recipeData?.used_ingredients.length || 0;
+  const missingCount = recipeData?.missing_ingredients.length || 0;
+  const ingredientPreview = recipeData?.used_ingredients.slice(0, 3).join(", ");
+
   return (
     <motion.div 
       initial={{ opacity: 0, y: 30 }}
@@ -37,56 +41,59 @@ export function RecipeCard({ title, image, match, time, difficulty, recipeData }
       whileHover="hover"
       whileTap="tap"
       variants={{
-        hover: { y: -10, boxShadow: "0 30px 60px rgba(0,0,0,0.6)" },
+        hover: { y: -5, boxShadow: "0 20px 40px rgba(0,0,0,0.4)" },
         tap: { scale: 0.98 }
       }}
       onClick={handleSelect}
-      className="recipe-card-glass rounded-[1.5rem] overflow-hidden relative shadow-2xl border border-white/5 group h-full flex flex-col cursor-pointer"
+      className="bg-neutral-900/40 backdrop-blur-xl rounded-[2rem] overflow-hidden relative border border-white/5 group cursor-pointer flex flex-col"
     >
-      <div className="relative h-[280px] md:h-[350px] lg:h-[400px] overflow-hidden">
-        <motion.img 
-          variants={{ hover: { scale: 1.05 }, tap: { scale: 1.02 } }}
-          transition={{ duration: 0.5, ease: "easeOut" }}
-          alt={title} 
-          className="w-full h-full object-cover origin-center" 
-          src={image} 
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-surface-container-lowest via-surface-container-lowest/40 to-transparent opacity-95"></div>
-        {/* Match Badge */}
-        <div className="absolute top-6 right-6 bg-primary-container/20 backdrop-blur-md px-4 py-2 rounded-full border border-primary/30 shadow-[0_0_15px_rgba(245,158,11,0.3)]">
-          <span className="font-label text-xs font-bold text-primary tracking-tighter">{match}% MATCH</span>
+      {/* Refined Header - Minimalist Match Badge */}
+      <div className="relative h-16 overflow-hidden flex items-center px-6">
+        <div className="absolute inset-0 opacity-10 bg-gradient-to-br from-primary to-transparent" />
+        
+        {/* Match Badge - Now more subtle */}
+        <div className="bg-primary/10 backdrop-blur-xl px-3 py-1 rounded-full border border-primary/20">
+          <span className="text-[9px] font-black text-primary tracking-[0.2em]">{match}% MATCH</span>
         </div>
       </div>
-      <div className="p-8 -mt-24 relative z-10 flex-1 flex flex-col">
-        <div className="flex justify-between items-end flex-1">
-          <div className="space-y-3">
-            <h3 className="text-2xl font-extrabold tracking-tight text-on-surface leading-tight">
+
+      <div className="px-6 pb-6 pt-2 flex flex-col gap-4">
+        <div className="flex justify-between items-start">
+          <div className="space-y-1">
+            <h3 className="text-2xl font-black tracking-tight text-white/90 leading-[1.1] group-hover:text-primary transition-colors">
               {title}
             </h3>
-            <div className="flex items-center gap-4 text-on-surface-variant font-label text-xs tracking-wide">
-              <div className="flex items-center gap-1.5">
-                <span className="material-symbols-outlined text-[18px] text-primary">schedule</span>
-                <span>{time}</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="material-symbols-outlined text-[18px] text-primary">restaurant_menu</span>
-                <span>{difficulty}</span>
-              </div>
-            </div>
+            <p className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em]">
+              {difficulty} • {time}
+            </p>
           </div>
-          <div className="relative shrink-0">
-            <motion.div 
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="bg-primary text-on-primary p-4 rounded-2xl shadow-[0_10px_20px_rgba(245,158,11,0.2)]"
-            >
-              <span className="material-symbols-outlined">arrow_forward</span>
-            </motion.div>
+          
+          <motion.div 
+            variants={{ hover: { x: 5 } }}
+            className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-primary shrink-0"
+          >
+            <span className="material-symbols-outlined text-sm">arrow_forward</span>
+          </motion.div>
+        </div>
+
+        {/* Ingredient Insight */}
+        <div className="flex flex-col gap-2 p-4 bg-white/5 rounded-2xl border border-white/5">
+          <div className="flex justify-between items-center">
+            <span className="text-[8px] font-black uppercase tracking-widest text-white/20 italic">Archive Correlation</span>
+            <span className="text-[8px] font-bold text-primary/60 uppercase">{usedCount} ARCHIVED</span>
           </div>
+          <p className="text-[11px] font-medium text-white/60 leading-relaxed italic">
+            Uses: {ingredientPreview}{recipeData?.used_ingredients.length! > 3 ? "..." : ""}
+          </p>
         </div>
       </div>
-      {/* Soft Glow Overlay */}
-      <div className="absolute inset-0 pointer-events-none rounded-[1.5rem] glow-halo opacity-40 group-hover:opacity-70 transition-opacity duration-500"></div>
+
+      {/* Interactive Glow */}
+      <motion.div 
+        variants={{ hover: { opacity: 1 } }}
+        initial={{ opacity: 0 }}
+        className="absolute inset-0 pointer-events-none bg-gradient-to-tr from-primary/5 to-transparent transition-opacity duration-500" 
+      />
     </motion.div>
   );
 }

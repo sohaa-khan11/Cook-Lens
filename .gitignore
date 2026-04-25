@@ -22,3 +22,10 @@ node_modules/
 
 # OS files
 .DS_Store
+Thumbs.db
+
+# Scratch and Temporary
+scratch/
+tmp/
+*.tmp
+temp/

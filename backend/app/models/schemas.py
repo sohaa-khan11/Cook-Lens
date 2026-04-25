@@ -31,8 +31,10 @@ class Recipe(BaseModel):
     missing_ingredients: List[str]
     substitutions: Optional[List[str]] = []
     steps: List[str]
-    match_score: Optional[int] = 0
+    match_score: Optional[float] = 0.0
     reason: Optional[str] = ""
+    time_minutes: Optional[int] = None
+    notes: Optional[str] = ""
 
 class RecipeResponse(BaseModel):
     """
@@ -41,3 +43,5 @@ class RecipeResponse(BaseModel):
     """
     recipes: List[Recipe]
     confidence_source: str = Field(default="user_confirmed")
+    message: Optional[str] = ""
+    mode: Optional[str] = "fallback_retrieval"
