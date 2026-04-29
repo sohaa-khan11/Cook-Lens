@@ -1,14 +1,13 @@
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 /**
  * Validates the base URL configuration.
  */
 function getBaseUrl(): string {
-  // FORCE FIX: Hardcoded to 127.0.0.1:8000 to resolve environment variable loading issues
-  const baseUrl = "http://127.0.0.1:8000";
+  const baseUrl = BASE_URL;
   
   if (typeof window !== "undefined") {
-    console.log(`[API] FORCE CONNECT: ${baseUrl}`);
+    console.log(`[API] CONNECT: ${baseUrl}`);
   }
   
   return baseUrl;

@@ -29,3 +29,9 @@ scratch/
 tmp/
 *.tmp
 temp/
+
+# ML Models
+*.pt
+
+# Next.js Local Env
+.env.local
