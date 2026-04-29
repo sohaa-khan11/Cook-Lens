@@ -5,7 +5,7 @@ CookLens is an intelligent, AI-powered culinary assistant that transforms the in
 ## Project Structure
 
 This repository is split into two main parts:
-- **`backend/`**: A FastAPI application powered by Python and YOLOv8 for ingredient detection, connected to the Gemini API for recipe synthesis.
+- **`backend/`**: A FastAPI application powered by Python and YOLOv8 for ingredient detection, connected to a local Ollama LLM for offline recipe synthesis.
 - **`frontend/`**: A modern, responsive Next.js application built with React, Tailwind CSS, and Framer Motion, utilizing the "Lucid Assistant" design system.
 
 ---
@@ -36,10 +36,11 @@ cd backend
 pip install -r requirements.txt
 ```
 
-**Configure Environment Variables:**
-Create a `.env` file in the `backend/` directory and add your Google Gemini API key:
-```env
-GEMINI_API_KEY=your_api_key_here
+**Setup Local LLM (Ollama):**
+Ensure you have [Ollama](https://ollama.com/) installed and running on your machine.
+Pull and run the required model in a separate terminal:
+```bash
+ollama run phi3:mini
 ```
 
 **Run the Backend Server:**
@@ -78,7 +79,7 @@ The web application will be available at `http://localhost:3000`.
 1. Open the frontend application in your browser.
 2. Click **Start Scan** to upload or take a picture of your kitchen counter.
 3. The YOLOv8 model on the backend will detect the ingredients and populate your **Vault**.
-4. Click **Generate Recipes** to let the Gemini API synthesize creative, step-by-step recipes.
+4. Click **Generate Recipes** to let the local AI synthesize creative, step-by-step recipes.
 5. Cook, learn, and enjoy!
 
 ---
@@ -86,4 +87,4 @@ The web application will be available at `http://localhost:3000`.
 ## 🛠 Tech Stack
 
 - **Frontend:** Next.js, React, Tailwind CSS, Framer Motion
-- **Backend:** Python, FastAPI, Ultralytics YOLOv8, Google Generative AI (Gemini)
+- **Backend:** Python, FastAPI, Ultralytics YOLOv8, Ollama (Phi-3 Mini)
